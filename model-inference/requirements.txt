@@ -1,0 +1,11 @@
+torch==2.0.1
+torchvision>=0.15.0
+opencv-python>=4.5.0
+numpy==1.24.3
+kafka-python==2.0.2
+minio==7.1.15
+python-dotenv==1.0.0
+ultralytics==8.0.196
+Pillow==10.0.0
+aiohttp>=3.8.0
+

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-bot
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+    spec:
+      containers:
+      - name: telegram-bot
+        image: ${YOUR_REGISTRY}/telegram-bot:latest
+        env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: bot-secrets
+              key: bot-token
+        - name: KAFKA_BROKERS
+          value: "kafka:29092"
+        - name: MINIO_ENDPOINT
+          value: "minio:9000"
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secrets
+              key: access-key
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secrets
+              key: secret-key
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bot-secrets
+type: Opaque
+data:
+  bot-token: ${BASE64_ENCODED_BOT_TOKEN}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio-secrets
+type: Opaque
+data:
+  access-key: ${BASE64_ENCODED_MINIO_ACCESS_KEY}
+  secret-key: ${BASE64_ENCODED_MINIO_SECRET_KEY} 
