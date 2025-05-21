@@ -9,9 +9,9 @@ class KafkaConfig:
     group_id: str = "telegram_bot_group"
     auto_offset_reset: str = "earliest"
     enable_auto_commit: bool = True
-    session_timeout_ms: int = 10000
-    heartbeat_interval_ms: int = 3000
-    request_timeout_ms: int = 30000
+    session_timeout_ms: int = 30000
+    heartbeat_interval_ms: int = 10000
+    request_timeout_ms: int = 40000
     security_protocol: str = "PLAINTEXT"
     client_id: str = "telegram-bot-client"
 

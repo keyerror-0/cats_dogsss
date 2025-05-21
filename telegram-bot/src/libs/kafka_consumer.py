@@ -14,6 +14,7 @@ class KafkaConsumerWrapper:
             
         self.consumer = KafkaConsumerClient(
             topic,
+            api_version=(2, 5, 0), # Added this line
             **self.config.consumer_config
         )
         logging.info(f"Kafka Consumer initialized for topic: {topic}")
