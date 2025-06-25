@@ -1,0 +1,5 @@
+aiogram>=3.0
+minio>=7.0
+confluent-kafka>=2.0
+python-dotenv>=0.19
+Pillow==10.3.0

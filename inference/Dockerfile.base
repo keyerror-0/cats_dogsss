@@ -1,0 +1,11 @@
+FROM ultralytics/ultralytics:latest-cpu
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Сначала копируем только requirements.txt
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt 

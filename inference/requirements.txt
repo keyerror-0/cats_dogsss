@@ -1,0 +1,7 @@
+numpy
+torch==2.3.0+cpu
+torchvision==0.18.0+cpu
+minio==7.2.4
+confluent-kafka==2.4.0
+opencv-python-headless==4.9.0.80
+Pillow==10.3.0  

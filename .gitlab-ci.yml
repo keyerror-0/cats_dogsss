@@ -1,0 +1,88 @@
+stages:
+  - build
+  - deploy
+
+cache:
+  key: $CI_COMMIT_REF_SLUG  # Уникальный ключ (например, по имени ветки)
+  paths:
+    - .  # Кешируемая директория
+
+build-bot:
+  stage: build
+  tags:
+    - dind
+  image: docker:24
+  services:
+    - name: docker:24-dind
+      variables:
+        HEALTHCHECK_TCP_PORT: "2375"
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "$CI_PASSWORD" | docker login -u "$CI_LOGIN" --password-stdin
+    - docker build -t $CI_LOGIN/23934_bot:latest -f bot/Dockerfile bot/
+    - docker push $CI_LOGIN/23934_bot:latest
+
+build-inference:
+  stage: build
+  tags:
+    - dind
+  image: docker:24
+  services:
+    - name: docker:24-dind
+      variables:
+        HEALTHCHECK_TCP_PORT: "2375"
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "$CI_PASSWORD" | docker login -u "$CI_LOGIN" --password-stdin
+    - docker build -t $CI_LOGIN/23934_inference:latest -f inference/Dockerfile inference/
+    - docker push $CI_LOGIN/23934_inference:latest
+
+build-notification:
+  stage: build
+  tags:
+    - dind
+  image: docker:24
+  services:
+    - name: docker:24-dind
+      variables:
+        HEALTHCHECK_TCP_PORT: "2375"
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "$CI_PASSWORD" | docker login -u "$CI_LOGIN" --password-stdin
+    - docker build -t $CI_LOGIN/23934_notification:latest -f notification/Dockerfile notification/
+    - docker push $CI_LOGIN/23934_notification:latest
+
+build-retraining:
+  stage: build
+  tags:
+    - dind
+  image: docker:24
+  services:
+    - name: docker:24-dind
+      variables:
+        HEALTHCHECK_TCP_PORT: "2375"
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "$CI_PASSWORD" | docker login -u "$CI_LOGIN" --password-stdin
+    - docker build -t $CI_LOGIN/23934_retraining_service:latest -f retraining_service/Dockerfile retraining_service/
+    - docker push $CI_LOGIN/23934_retraining_service:latest
+
+deploy:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/secrets.yaml
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/minio.yaml
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/kafka.yaml
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/bot.yaml
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/inference.yaml
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/notification.yaml
+    - kubectl --kubeconfig 23934-class.kube.conf apply -f k8s/retraining_service.yaml
