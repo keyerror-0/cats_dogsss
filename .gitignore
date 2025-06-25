@@ -1,2 +1,3 @@
 .env
-23934-class.kube.conf   
+23934-class.kube.conf
+k8s\secrets.yaml
